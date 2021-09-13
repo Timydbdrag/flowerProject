@@ -1,0 +1,5 @@
+databaseChangeLog:
+  - includeAll:
+      path: db/changelog/2021_sql/
+  - includeAll:
+      path: testdb/changelog/2021_sql/
