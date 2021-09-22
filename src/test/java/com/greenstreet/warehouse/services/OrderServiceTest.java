@@ -21,7 +21,6 @@ import org.springframework.data.domain.*;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.greenstreet.warehouse.exception.ExceptionConstant.ORDER_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -133,6 +132,22 @@ class OrderServiceTest {
         });
 
         assertThat(exception.getMessage()).isEqualTo(ORDER_NOT_FOUND);
+    }
+
+    @Test
+    void shouldReturnOrdersByCurrentUser(){
+        Order testOrder = getTestOrder();
+        HashSet<Order> orders = new HashSet<>(Collections.singletonList(testOrder));
+
+        try (MockedStatic<SecurityUtils> theMock = Mockito.mockStatic(SecurityUtils.class)) {
+            theMock.when(SecurityUtils::getCurrentUserLogin)
+                    .thenReturn(Optional.of(testOrder.getUser().getLogin()));
+
+            given(orderRepository.getUserOrders(testOrder.getUser().getLogin())).willReturn(orders);
+
+            Set<ResponseOrderDTO> expected = orders.stream().map(ResponseOrderDTO::new).collect(Collectors.toSet());
+            assertThat(orderService.getUserOrders()).isEqualTo(expected);
+        }
     }
 
     private Order getTestOrder() {

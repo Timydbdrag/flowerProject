@@ -9,9 +9,7 @@ public class OrderDTO {
     @NotNull
     private Set<OrderProductDTO> products;
 
-    public OrderDTO(){
-        //default constructor for Jackson
-    }
+    public OrderDTO(){}
 
     public Integer getDeliveryScheduleId() {
         return deliveryScheduleId;

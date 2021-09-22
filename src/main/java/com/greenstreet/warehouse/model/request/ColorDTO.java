@@ -10,9 +10,7 @@ public class ColorDTO {
     @NotNull
     private String name;
 
-    public ColorDTO(){
-        //default constructor for Jackson
-    }
+    public ColorDTO(){}
 
     public ColorDTO(Integer id, @NotNull String name) {
         this.id = id;

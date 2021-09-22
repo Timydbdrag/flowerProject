@@ -24,10 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -103,7 +100,7 @@ class OrderControllerTest {
 
     @Test
     @WithMockUser(value = "tester", roles = "ADMIN")
-    void updateOrder() throws Exception {
+    void shouldUpdatedOrder() throws Exception {
         String uri = "/api/order";
 
         ResponseOrderDTO expected = getResponseOrderDTO();
@@ -114,6 +111,22 @@ class OrderControllerTest {
         mockMvc.perform(put(uri)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(new OrderDTOAdmin())))
+                .andExpect(status().isOk())
+                .andExpect(content().json(expectedResult));
+    }
+
+    @Test
+    @WithMockUser(value = "tester", roles = "ADMIN")
+    void shouldReturnOrdersByCurrentUser() throws Exception {
+        String uri = "/api/order/user";
+
+        Set<ResponseOrderDTO> expected = new HashSet<>(Collections.singletonList(getResponseOrderDTO()));
+        given(orderService.getUserOrders()).willReturn(expected);
+
+        String expectedResult = objectMapper.writeValueAsString(expected);
+
+        mockMvc.perform(get(uri)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedResult));
     }

@@ -22,8 +22,8 @@ import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -46,14 +46,16 @@ class DeliveryScheduleControllerTest {
     @Test
     @WithMockUser(value = "tester", roles = "MANAGER")
     void shouldReturnAllDeliveryDate() throws Exception {
-        Pageable pageable = PageRequest.of(0,2);
-        Page<DeliverySchedule> page = new PageImpl<>(List.of(getTestSchedule()));
+        Pageable pageable = PageRequest.of(0, 2);
+        List<DeliverySchedule> testSchedule = List.of(getTestSchedule());
+        Page<DeliverySchedule> page = new PageImpl<>(testSchedule);
         given(scheduleService.getAll(pageable)).willReturn(page);
 
-        mockMvc.perform(get(uri+"?page=0&size=2")
+        mockMvc.perform(get(uri + "?page=0&size=2")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(page)));
+                .andExpect(jsonPath("$.content.[*].id").value(testSchedule.get(0).getId()))
+                .andExpect(jsonPath("$.content.[*].date").value(testSchedule.get(0).getDate().toString()));
     }
 
     @Test
@@ -68,7 +70,8 @@ class DeliveryScheduleControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(date))
                 .andExpect(status().isCreated())
-                .andExpect(content().json(date));
+                .andExpect(jsonPath("$.id").value(schedule.getId()))
+                .andExpect(jsonPath("$.date").value(schedule.getDate().toString()));
     }
 
     @Test
@@ -83,7 +86,8 @@ class DeliveryScheduleControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(date))
                 .andExpect(status().isOk())
-                .andExpect(content().json(date));
+                .andExpect(jsonPath("$.id").value(schedule.getId()))
+                .andExpect(jsonPath("$.date").value(schedule.getDate().toString()));
     }
 
     @Test

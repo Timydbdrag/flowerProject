@@ -17,8 +17,8 @@ import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -47,7 +47,8 @@ class CountryControllerTest {
         mockMvc.perform(get(uri)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(testCountries)));
+                .andExpect(jsonPath("$.[*].id").value(testCountries.get(0).getId()))
+                .andExpect(jsonPath("$.[*].name").value(testCountries.get(0).getName()));
     }
 
     @Test
@@ -64,7 +65,8 @@ class CountryControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(county))
                 .andExpect(status().isCreated())
-                .andExpect(content().json(county));
+                .andExpect(jsonPath("$.id").value(testCountry.getId()))
+                .andExpect(jsonPath("$.name").value(testCountry.getName()));
     }
 
     @Test
@@ -81,7 +83,8 @@ class CountryControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(county))
                 .andExpect(status().isOk())
-                .andExpect(content().json(county));
+                .andExpect(jsonPath("$.id").value(testCountry.getId()))
+                .andExpect(jsonPath("$.name").value(testCountry.getName()));
     }
 
     private Country getTestCountry() {

@@ -18,8 +18,7 @@ import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -48,7 +47,8 @@ class ColorControllerTest {
         mockMvc.perform(get(uri)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(testColors)));
+                .andExpect(jsonPath("$.[*].id").value(testColors.get(0).getId()))
+                .andExpect(jsonPath("$.[*].name").value(testColors.get(0).getName()));
     }
 
     @Test
@@ -59,14 +59,14 @@ class ColorControllerTest {
 
         given(colorService.create(colorDTO)).willReturn(testColor);
 
-        String color = objectMapper.writeValueAsString(testColor);
         String content = objectMapper.writeValueAsString(colorDTO);
 
         mockMvc.perform(post(uri)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content))
                 .andExpect(status().isCreated())
-                .andExpect(content().json(color));
+                .andExpect(jsonPath("$.id").value(testColor.getId()))
+                .andExpect(jsonPath("$.name").value(testColor.getName()));
     }
 
     @Test
@@ -77,13 +77,12 @@ class ColorControllerTest {
 
         given(colorService.update(colorDTO)).willReturn(testColor);
 
-        String color = objectMapper.writeValueAsString(testColor);
-
         mockMvc.perform(put(uri)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(colorDTO)))
                 .andExpect(status().isOk())
-                .andExpect(content().json(color));
+                .andExpect(jsonPath("$.id").value(testColor.getId()))
+                .andExpect(jsonPath("$.name").value(testColor.getName()));
     }
 
     @Test

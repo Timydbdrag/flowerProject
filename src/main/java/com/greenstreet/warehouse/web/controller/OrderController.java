@@ -1,6 +1,5 @@
 package com.greenstreet.warehouse.web.controller;
 
-import com.greenstreet.warehouse.entity.Order;
 import com.greenstreet.warehouse.model.request.OrderDTO;
 import com.greenstreet.warehouse.model.request.OrderDTOAdmin;
 import com.greenstreet.warehouse.model.response.ResponseOrderDTO;
@@ -15,6 +14,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -45,6 +45,11 @@ public class OrderController {
     @PutMapping
     public ResponseEntity<ResponseOrderDTO> updateOrder(@Valid @RequestBody OrderDTOAdmin order) {
         return ResponseEntity.ok().body(orderService.update(order));
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<Set<ResponseOrderDTO>> getUserOrders() {
+        return ResponseEntity.ok().body(orderService.getUserOrders());
     }
 
 }

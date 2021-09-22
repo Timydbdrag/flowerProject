@@ -6,6 +6,7 @@ import com.greenstreet.warehouse.model.response.ResponseOrderDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Set;
 import java.util.UUID;
 
 public interface OrderService {
@@ -13,4 +14,5 @@ public interface OrderService {
     ResponseOrderDTO update (OrderDTOAdmin order);
     Page<ResponseOrderDTO> getAll(Pageable pageable);
     ResponseOrderDTO getOrder(UUID id);
+    Set<ResponseOrderDTO> getUserOrders();
 }

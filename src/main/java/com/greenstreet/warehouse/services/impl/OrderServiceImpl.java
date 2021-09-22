@@ -9,7 +9,6 @@ import com.greenstreet.warehouse.model.response.ResponseOrderDTO;
 import com.greenstreet.warehouse.repository.*;
 import com.greenstreet.warehouse.security.SecurityUtils;
 import com.greenstreet.warehouse.services.OrderService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -113,6 +112,14 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new ApiRequestException(ORDER_NOT_FOUND));
 
         return new ResponseOrderDTO(order);
+    }
+
+    @Override
+    public Set<ResponseOrderDTO> getUserOrders() {
+        String login = SecurityUtils.getCurrentUserLogin()
+                .orElseThrow(() -> new ApiRequestException(USER_NOT_FOUND));
+
+        return orderRepository.getUserOrders(login).stream().map(ResponseOrderDTO::new).collect(Collectors.toSet());
     }
 
     private void updateOrderProduct(OrderProductDTO orderProductDTO) {

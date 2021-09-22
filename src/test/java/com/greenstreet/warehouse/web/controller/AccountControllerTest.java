@@ -21,8 +21,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -48,12 +48,11 @@ class AccountControllerTest {
         ResponseUserDTO userDTO = getUserDTO();
         given(accountService.getUserWithAuthorities()).willReturn(userDTO);
 
-        String expectedResult = objectMapper.writeValueAsString(userDTO);
-
         mockMvc.perform(get(uri)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().json(expectedResult));
+                .andExpect(jsonPath("$.id").value(userDTO.getId().toString()))
+                .andExpect(jsonPath("$.login").value(userDTO.getLogin()));
     }
 
     @Test
